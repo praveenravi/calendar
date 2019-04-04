@@ -93,7 +93,7 @@ function getDates($month,$year,$data=NULL){
 		if(in_array($dates[$i]['original_date'], $data['date_from_databse'])) {
 			$calendar_string .= "<td class='blocked_dates' date='".$dates[$i]['original_date']."'> ".$dates[$i]['date']."</td>";
 		} else {
-			$calendar_string .= "<td class='available_dates' date='".$dates[$i]['original_date']."'> <a href='#' > ".$dates[$i]['date']." </a> </td>";
+			$calendar_string .= "<td class='available_dates' date='".$dates[$i]['original_date']."'> <a href='javascript:void(0);' > ".$dates[$i]['date']." </a> </td>";
 		}
 
 		
@@ -146,7 +146,7 @@ function getDates($month,$year,$data=NULL){
   <body>
   	<div class="container">
   		
-
+  		<input type="text" name="date_for_database" id="date_for_database">
    
     	<?php
 
@@ -191,6 +191,8 @@ function getDates($month,$year,$data=NULL){
 
 					    if($(this).hasClass('available_dates')){
 
+					    	$("#date_for_database").val( $(this).attr('date') +','+ $.trim( $("#date_for_database").val() ) );
+
 					    	$(this).addClass('selected_dates');
 					    	number_of_days_selected++;
 
@@ -207,11 +209,13 @@ function getDates($month,$year,$data=NULL){
 
 	    		if(number_of_days_selected != minimum_day_selection_package) {
 	    			$('#calendar td').removeClass('selected_dates');
+	    			$("#date_for_database").val('');
 	    			alert("Dates not avaiable");
 
 	    		} else 	if(error_flag > 0) {
 	    			
 	    			$('#calendar td').removeClass('selected_dates');
+	    			$("#date_for_database").val('');
 	    			alert("Please select "+minimum_day_selection_package+" continuous dates that are avaiable");
 	    		}
 
