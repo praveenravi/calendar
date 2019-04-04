@@ -91,9 +91,9 @@ function getDates($month,$year,$data=NULL){
 		//check database dates with calendar dates
 
 		if(in_array($dates[$i]['original_date'], $data['date_from_databse'])) {
-			$calendar_string .= "<td class='blocked_dates'> ".$dates[$i]['date']."</td>";
+			$calendar_string .= "<td class='blocked_dates' date='".$dates[$i]['original_date']."'> ".$dates[$i]['date']."</td>";
 		} else {
-			$calendar_string .= "<td class='available_dates'> <a href='#' > ".$dates[$i]['date']." </a> </td>";
+			$calendar_string .= "<td class='available_dates' date='".$dates[$i]['original_date']."'> <a href='#' > ".$dates[$i]['date']." </a> </td>";
 		}
 
 		
@@ -171,22 +171,93 @@ function getDates($month,$year,$data=NULL){
     	
     	$(document).ready(function() {
 
-    		var minimum_day_selection = 1;
+    		var minimum_day_selection_package = 3;
 
     		$(".available_dates").click(function() {
     			
     			$('#calendar td').removeClass('selected_dates');
 
-    			 $(this).addClass('selected_dates');
 
-    			 $(this).nextAll('.available_dates').slice(0, minimum_day_selection).addClass('selected_dates');
+    			 var selected_date = $(this).attr('date');
+    			 
+    			 dates_to_be_selected = getDatesFromPackage(selected_date,minimum_day_selection_package);
+
+
+    			var error_flag = 0;
+    			var number_of_days_selected = 0;
+	    		$("#calendar tr td").each(function() {
+		         	if(jQuery.inArray($(this).attr('date'), dates_to_be_selected) != -1) {
+					    console.log("is in array");
+
+					    if($(this).hasClass('available_dates')){
+
+					    	$(this).addClass('selected_dates');
+					    	number_of_days_selected++;
+
+					    } else {
+					    	error_flag++;
+					    }
+
+					} else {
+					    //console.log("is NOT in array");
+					} 
+
+
+				});
+
+	    		if(number_of_days_selected != minimum_day_selection_package) {
+	    			$('#calendar td').removeClass('selected_dates');
+	    			alert("Dates not avaiable");
+
+	    		} else 	if(error_flag > 0) {
+	    			
+	    			$('#calendar td').removeClass('selected_dates');
+	    			alert("Please select "+minimum_day_selection_package+" continuous dates that are avaiable");
+	    		}
+
+
+
+
     			 // if(minimum_day_selection == 2) {
 
     			 // }
     		});
 
 
-    	});
+    	
+
+
+    	function getDatesFromPackage(selected_date,minimum_day_selection_package){
+
+    		var day = new Date(selected_date);
+			console.log(day); // Apr 30 2000
+
+			var selected_dates = [];
+			selected_dates[0] = selected_date;
+
+			for(i=0;i<minimum_day_selection_package;i++)
+			{
+				var d = new Date(day);
+				d.setDate(day.getDate()+i);
+				console.log(d); // May 01 2000   
+				var datestring = d.getFullYear()+ "-" + ("0"+(d.getMonth()+1)).slice(-2) + "-" +("0" + d.getDate()).slice(-2);
+				selected_dates[i] = datestring;
+
+
+			}
+		
+			console.log(selected_dates);
+
+			return selected_dates;
+
+			//console.log(datestring);
+    	}
+
+
+
+   	});
+
+
 
     </script>
 
